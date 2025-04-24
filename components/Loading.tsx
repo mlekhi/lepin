@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 interface LoadingProps {
@@ -16,8 +17,15 @@ export default function Loading({ className = '' }: LoadingProps) {
       className={`fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-1000 ease-in-out dark:bg-black ${className}`}
     >
       <div className="flex flex-col items-center gap-4">
-        <div className="animate-spin text-5xl" style={{ animationDuration: '1s' }}>
-          🏀
+        <div className="animate-spin" style={{ animationDuration: '1s' }}>
+          <Image
+            src="/logo.png"
+            alt="Loading"
+            width={48}
+            height={48}
+            className="w-12 h-12 object-contain"
+            priority
+          />
         </div>
       </div>
     </div>

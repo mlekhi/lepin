@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { HomeIcon, BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { HomeIcon as HomeIconSolid, BellIcon as BellIconSolid, UserCircleIcon as UserCircleIconSolid } from '@heroicons/react/24/solid';
@@ -13,7 +14,14 @@ export default function SideNav() {
   return (
     <div className="fixed left-0 top-0 h-full w-20 bg-white dark:bg-black border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-8">
       <Link href="/" className="mb-8">
-      <p>lebron</p>
+        <Image
+          src="/logo.png"
+          alt="Lebron Logo"
+          width={24}
+          height={24}
+          className="w-6 h-6 object-contain"
+          priority
+        />
       </Link>
 
       <nav className="flex flex-col items-center space-y-6">
