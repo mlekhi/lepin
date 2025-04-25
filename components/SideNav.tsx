@@ -59,7 +59,11 @@ export default function SideNav() {
           className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
           aria-label="Open settings"
         >
-          <Cog6ToothIcon className="w-6 h-6 text-muted-foreground" />
+          {isSettingsOpen ? (
+            <Cog6ToothIconSolid className="w-6 h-6 text-foreground" />
+          ) : (
+            <Cog6ToothIcon className="w-6 h-6 text-muted-foreground" />
+          )}
         </button>
       </div>
 
