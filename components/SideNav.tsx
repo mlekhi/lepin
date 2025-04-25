@@ -12,38 +12,40 @@ export default function SideNav() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="fixed left-0 top-0 h-full w-20 bg-background border-r border-border flex flex-col items-center py-4 space-y-8 z-50">
-      <Link href="/" className="mb-8">
-        <Image
-          src="/logo.png"
-          alt="Lebron Logo"
-          width={24}
-          height={24}
-          className="w-6 h-6 object-contain"
-          priority
-        />
-      </Link>
+    <div className="fixed left-0 top-0 h-full w-20 bg-background border-r border-border flex flex-col items-center z-50">
+      <div className="h-16 flex items-center justify-center">
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="Lebron Logo"
+            width={24}
+            height={24}
+            className="w-6 h-6 object-contain"
+            priority
+          />
+        </Link>
+      </div>
 
-      <nav className="flex flex-col items-center space-y-6">
+      <nav className="flex flex-col items-center gap-8 mt-8">
         <Link
           href="/"
-          className="w-12 h-12 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
+          className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
         >
           {isActive('/') ? (
-            <HomeIconSolid className="w-7 h-7 text-foreground" />
+            <HomeIconSolid className="w-6 h-6 text-foreground" />
           ) : (
-            <HomeIcon className="w-7 h-7 text-muted-foreground" />
+            <HomeIcon className="w-6 h-6 text-muted-foreground" />
           )}
         </Link>
 
         <Link
           href="/search"
-          className="w-12 h-12 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
+          className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
         >
           {isActive('/search') ? (
-            <MapIconSolid className="w-7 h-7 text-foreground" />
+            <MapIconSolid className="w-6 h-6 text-foreground" />
           ) : (
-            <MapIcon className="w-7 h-7 text-muted-foreground" />
+            <MapIcon className="w-6 h-6 text-muted-foreground" />
           )}
         </Link>
       </nav>
