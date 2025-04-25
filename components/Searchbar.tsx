@@ -2,129 +2,64 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { MagnifyingGlassIcon, PlusIcon, BellIcon, ChatBubbleLeftIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@/components/providers/AuthProvider';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@/components/providers/AuthProvider';
+import ProfileDropdownModal from './modals/ProfileDropdownModal';
 
 export default function Searchbar() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      setIsSearching(true);
-      try {
-        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      } finally {
-        setIsSearching(false);
-      }
-    }
-  };
-
-  const handleSignOut = async () => {
-    setIsDropdownOpen(false);
-    await signOut();
-    router.push('/');
+    if (!searchQuery.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
   return (
-    <nav className="bg-white dark:bg-black h-16">
-      <div className="h-full flex items-center justify-between max-w-[1200px] mx-auto px-4">
-        {/* Left section - empty for spacing */}
-        <div className="w-10"></div>
-
-        {/* Center section - search form */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-[800px] px-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              {isSearching ? (
-                <div className="animate-spin h-5 w-5">
-                  <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-              ) : (
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </div>
+    <nav className="sticky top-0 z-50 bg-background">
+      <div className="flex items-center gap-2 pl-28 pr-4 h-16">
+        {/* Search bar */}
+        <div className="flex-1 max-w-[1200px]">
+          <form onSubmit={handleSearch} className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <input
               type="text"
-              className="block w-full pl-11 pr-4 py-3 bg-[#e9e9e9] dark:bg-gray-800 rounded-xl border-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white text-gray-900 dark:text-gray-100 placeholder-gray-600 dark:placeholder-gray-400"
               placeholder="Search for pins, boards, or users"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={isSearching}
+              className="w-full pl-10 pr-4 py-3 bg-secondary/50 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:bg-secondary"
             />
-          </div>
-        </form>
+          </form>
+        </div>
 
-        {/* Right section - profile buttons */}
+        {/* Profile section */}
         <div className="flex items-center gap-2">
-          {/* Profile picture button */}
-          <Link 
-            href={`/profile/${user?.uid}`}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 p-2 rounded-full hover:bg-secondary/80"
           >
-            {user?.photoURL ? (
+            <div className="relative w-8 h-8 rounded-full overflow-hidden">
               <Image
-                src={user.photoURL}
-                alt={user.displayName || 'Profile'}
-                width={28}
-                height={28}
-                className="rounded-full"
+                src={user?.photoURL || '/default-avatar.png'}
+                alt={user?.displayName || 'Profile'}
+                fill
+                className="object-cover"
               />
-            ) : (
-              <UserCircleIcon className="h-7 w-7 text-gray-600 dark:text-gray-300" />
-            )}
-          </Link>
-
-          {/* Account dropdown button */}
-          <div className="relative">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <ChevronDownIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </button>
-
-            {/* Dropdown Menu */}
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50">
-                <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.displayName || 'User'}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
-                </div>
-                <Link 
-                  href="/profile/boards"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  Your Boards
-                </Link>
-                <Link 
-                  href="/settings"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  Settings
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
+            </div>
+            <ChevronDownIcon className="h-5 w-5 text-muted-foreground" />
+          </button>
         </div>
       </div>
+
+      <ProfileDropdownModal 
+        isOpen={isDropdownOpen} 
+        onClose={() => setIsDropdownOpen(false)} 
+      />
     </nav>
   );
 } 

@@ -23,6 +23,15 @@ const nextConfig = {
     ],
     domains: ['lh3.googleusercontent.com'],
   },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false
+      }
+    });
+    return config;
+  }
 };
 
 module.exports = nextConfig; 

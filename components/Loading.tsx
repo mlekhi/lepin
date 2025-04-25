@@ -14,7 +14,7 @@ export default function Loading({ className = '' }: LoadingProps) {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-1000 ease-in-out dark:bg-black ${className}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-opacity duration-1000 ease-in-out ${className}`}
     >
       <div className="flex flex-col items-center gap-4">
         <div className="animate-spin" style={{ animationDuration: '1s' }}>

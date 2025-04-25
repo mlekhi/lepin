@@ -1,15 +1,10 @@
 'use client';
 
 import { Pin } from '@/lib/dummy-data';
-import PinCard from "./PinCard";
+import PinCard from './PinCard';
 
 interface PinGridProps {
-  pins?: (Pin & {
-    author: {
-      name: string | null;
-      image: string | null;
-    };
-  })[];
+  pins?: Pin[];
 }
 
 export default function PinGrid({ pins = [] }: PinGridProps) {
@@ -18,11 +13,9 @@ export default function PinGrid({ pins = [] }: PinGridProps) {
   }
 
   return (
-    <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
       {pins.map((pin) => (
-        <div key={pin.id} className="mb-4 break-inside-avoid">
-          <PinCard pin={pin} />
-        </div>
+        <PinCard key={pin.id} pin={pin} />
       ))}
     </div>
   );

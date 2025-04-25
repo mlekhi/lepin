@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { HomeIcon as HomeIconSolid, BellIcon as BellIconSolid, UserCircleIcon as UserCircleIconSolid } from '@heroicons/react/24/solid';
+import { HomeIcon, BellIcon, UserCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { HomeIcon as HomeIconSolid, BellIcon as BellIconSolid, UserCircleIcon as UserCircleIconSolid, MagnifyingGlassIcon as MagnifyingGlassIconSolid } from '@heroicons/react/24/solid';
 
 export default function SideNav() {
   const pathname = usePathname();
@@ -12,7 +12,7 @@ export default function SideNav() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="fixed left-0 top-0 h-full w-20 bg-white dark:bg-black border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-8">
+    <div className="fixed left-0 top-0 h-full w-20 bg-background border-r border-border flex flex-col items-center py-4 space-y-8">
       <Link href="/" className="mb-8">
         <Image
           src="/logo.png"
@@ -27,14 +27,27 @@ export default function SideNav() {
       <nav className="flex flex-col items-center space-y-6">
         <Link
           href="/"
-          className={`w-12 h-12 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 ${
-            isActive('/') ? 'bg-black dark:bg-white' : ''
+          className={`w-12 h-12 flex items-center justify-center rounded-xl transition-colors ${
+            isActive('/') ? 'bg-primary hover:bg-primary/90' : 'hover:bg-secondary'
           }`}
         >
           {isActive('/') ? (
-            <HomeIconSolid className={`w-6 h-6 ${isActive('/') ? 'text-white dark:text-black' : 'text-gray-700 dark:text-gray-300'}`} />
+            <HomeIconSolid className="w-7 h-7 text-primary-foreground" />
           ) : (
-            <HomeIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            <HomeIcon className="w-7 h-7 text-muted-foreground" />
+          )}
+        </Link>
+
+        <Link
+          href="/search"
+          className={`w-12 h-12 flex items-center justify-center rounded-xl transition-colors ${
+            isActive('/search') ? 'bg-primary hover:bg-primary/90' : 'hover:bg-secondary'
+          }`}
+        >
+          {isActive('/search') ? (
+            <MagnifyingGlassIconSolid className="w-7 h-7 text-primary-foreground" />
+          ) : (
+            <MagnifyingGlassIcon className="w-7 h-7 text-muted-foreground" />
           )}
         </Link>
       </nav>

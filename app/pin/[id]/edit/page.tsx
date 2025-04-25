@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 
 interface EditPinPageProps {
   params: {
@@ -16,10 +15,9 @@ export default function EditPinPage({ params }: EditPinPageProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchPin = async () => {
@@ -33,16 +31,12 @@ export default function EditPinPage({ params }: EditPinPageProps) {
         setDescription(pin.description || '');
         setImageUrl(pin.imageUrl);
       } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch pin',
-          variant: 'destructive',
-        });
+        console.error('Failed to fetch pin', error);
       }
     };
 
     fetchPin();
-  }, [params.id, toast]);
+  }, [params.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,18 +59,9 @@ export default function EditPinPage({ params }: EditPinPageProps) {
         throw new Error('Failed to update pin');
       }
 
-      toast({
-        title: 'Success',
-        description: 'Pin updated successfully',
-      });
-
       router.push(`/pin/${params.id}`);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update pin',
-        variant: 'destructive',
-      });
+      console.error('Failed to update pin', error);
     } finally {
       setIsLoading(false);
     }

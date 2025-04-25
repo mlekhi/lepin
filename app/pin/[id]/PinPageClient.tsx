@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 
 interface PinPageClientProps {
   pin: {
@@ -19,15 +18,14 @@ interface PinPageClientProps {
       image: string | null;
     };
   };
+  currentUser: any;
 }
 
-export default function PinPageClient({ pin }: PinPageClientProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { data: session } = useSession();
+export default function PinPageClient({ pin, currentUser }: PinPageClientProps) {
   const router = useRouter();
-  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isAuthor = session?.user?.id === pin.authorId;
+  const isAuthor = currentUser?.id === pin.authorId;
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this pin?')) {
@@ -45,18 +43,9 @@ export default function PinPageClient({ pin }: PinPageClientProps) {
         throw new Error('Failed to delete pin');
       }
 
-      toast({
-        title: 'Success',
-        description: 'Pin deleted successfully',
-      });
-
       router.push('/');
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete pin',
-        variant: 'destructive',
-      });
+      console.error('Failed to delete pin', error);
     } finally {
       setIsDeleting(false);
     }

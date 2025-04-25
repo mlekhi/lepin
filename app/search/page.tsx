@@ -1,61 +1,61 @@
+'use client';
+
 import { Suspense } from 'react';
-import { Pin, Board } from '@/lib/dummy-data';
+import { useSearchParams } from 'next/navigation';
+import Searchbar from '@/components/Searchbar';
+import SideNav from '@/components/SideNav';
 import PinGrid from '@/components/pins/PinGrid';
 import BoardGrid from '@/components/boards/BoardGrid';
+import { useEffect, useState } from 'react';
 
-async function getSearchResults(query: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/search?q=${encodeURIComponent(query)}`);
-  if (!res.ok) throw new Error('Failed to fetch search results');
-  return res.json();
-}
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
+  const [results, setResults] = useState<{ pins: any[]; boards: any[]; }>({ pins: [], boards: [] });
+  const [isLoading, setIsLoading] = useState(false);
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q: string };
-}) {
-  const query = searchParams.q;
-  
-  if (!query) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">Please enter a search term</h1>
-      </div>
-    );
-  }
+  useEffect(() => {
+    async function fetchResults() {
+      if (!query) {
+        setResults({ pins: [], boards: [] });
+        return;
+      }
 
-  const { pins, boards } = await getSearchResults(query);
+      setIsLoading(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('Failed to fetch search results');
+        const data = await res.json();
+        setResults(data);
+      } catch (error) {
+        console.error('Search error:', error);
+        setResults({ pins: [], boards: [] });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchResults();
+  }, [query]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Search results for "{query}"</h1>
-      
-      {/* Boards Section */}
-      {boards.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Boards</h2>
-          <Suspense fallback={<div>Loading boards...</div>}>
-            <BoardGrid boards={boards} />
-          </Suspense>
+    <>
+      <SideNav />
+      <Searchbar />
+      <div className="min-h-screen bg-background pl-20">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+              <h1 className="text-2xl font-bold text-foreground mb-4 text-center">Search</h1>
+                {!query && (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">
+                      Start typing to search for pins and boards
+                    </p>
+                  </div>
+                )}
+          </div>
         </div>
-      )}
-
-      {/* Pins Section */}
-      {pins.length > 0 && (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Pins</h2>
-          <Suspense fallback={<div>Loading pins...</div>}>
-            <PinGrid pins={pins} />
-          </Suspense>
-        </div>
-      )}
-
-      {/* No Results */}
-      {pins.length === 0 && boards.length === 0 && (
-        <p className="text-gray-600 dark:text-gray-400">
-          No results found for "{query}". Try a different search term.
-        </p>
-      )}
-    </div>
+      </div>
+    </>
   );
 } 

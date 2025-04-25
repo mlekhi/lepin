@@ -1,55 +1,40 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
-import { HeartIcon, ShareIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import { Pin as PinType } from '@/lib/dummy-data';
 
 interface PinProps {
-  imageUrl: string;
-  title: string;
-  description?: string;
-  author: string;
+  pin: PinType;
 }
 
-export default function Pin({ imageUrl, title, description, author }: PinProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
+export default function Pin({ pin }: PinProps) {
   return (
-    <div
-      className="pin-item relative group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="relative">
+    <div className="max-w-4xl mx-auto p-4">
+      <div className="relative aspect-square rounded-xl overflow-hidden">
         <Image
-          src={imageUrl}
-          alt={title}
-          width={500}
-          height={750}
-          className="pin-image"
+          src={pin.imageUrl}
+          alt={pin.title}
+          fill
+          className="object-cover"
         />
-        
-        {isHovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-xl flex flex-col justify-between p-4">
-            <div className="flex justify-end space-x-2">
-              <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                <HeartIcon className="h-5 w-5 text-gray-700" />
-              </button>
-              <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                <ShareIcon className="h-5 w-5 text-gray-700" />
-              </button>
-              <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                <BookmarkIcon className="h-5 w-5 text-gray-700" />
-              </button>
-            </div>
-            
-            <div className="text-white">
-              <h3 className="font-semibold text-lg">{title}</h3>
-              {description && <p className="text-sm mt-1">{description}</p>}
-              <p className="text-sm mt-2">by {author}</p>
-            </div>
+      </div>
+      <div className="mt-4">
+        <h1 className="text-2xl font-bold text-foreground">{pin.title}</h1>
+        <p className="mt-2 text-muted-foreground">{pin.description}</p>
+        <div className="mt-4 flex items-center gap-2">
+          <div className="w-10 h-10 relative rounded-full overflow-hidden">
+            <Image
+              src={pin.author.image || '/default-avatar.png'}
+              alt={pin.author.name}
+              fill
+              className="object-cover"
+            />
           </div>
-        )}
+          <div>
+            <p className="font-medium text-foreground">{pin.author.name}</p>
+            <p className="text-sm text-muted-foreground">Posted on {new Date(pin.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

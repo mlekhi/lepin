@@ -1,97 +1,43 @@
 import { NextResponse } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
+import { auth, db, storage } from '@/lib/firebase-admin';
 
-// Initialize Firebase Admin
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  });
+export async function GET() {
+  try {
+    const pinsRef = db.collection('pins');
+    const snapshot = await pinsRef.get();
+    const pins = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return NextResponse.json(pins);
+  } catch (error) {
+    console.error('Error fetching pins:', error);
+    return NextResponse.json({ error: 'Failed to fetch pins' }, { status: 500 });
+  }
 }
-
-const adminAuth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
 
 export async function POST(request: Request) {
   try {
-    const { idToken, title, description, imageUrl } = await request.json();
-    
-    if (!idToken) {
-      return NextResponse.json(
-        { error: 'No ID token provided' },
-        { status: 401 }
-      );
-    }
+    const { title, description, imageUrl, authorId } = await request.json();
 
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const userId = decodedToken.uid;
-
-    // Create pin in Firestore
     const pinRef = await db.collection('pins').add({
       title,
       description,
       imageUrl,
-      authorId: userId,
-      createdAt: new Date(),
-      author: {
-        name: decodedToken.name || 'Anonymous',
-        image: decodedToken.picture || null,
-      },
+      authorId,
+      createdAt: new Date().toISOString(),
     });
 
     const pin = await pinRef.get();
 
     return NextResponse.json({
       id: pin.id,
-      ...pin.data(),
+      ...pin.data()
     });
   } catch (error) {
     console.error('Error creating pin:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const idToken = searchParams.get('idToken');
-
-    if (!idToken) {
-      return NextResponse.json(
-        { error: 'No ID token provided' },
-        { status: 401 }
-      );
-    }
-
-    await adminAuth.verifyIdToken(idToken);
-
-    const pinsSnapshot = await db.collection('pins')
-      .orderBy('createdAt', 'desc')
-      .get();
-    
-    const pins = pinsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    return NextResponse.json(pins);
-  } catch (error) {
-    console.error('Error fetching pins:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create pin' }, { status: 500 });
   }
 }
 
