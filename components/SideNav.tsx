@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, BellIcon, UserCircleIcon, MapIcon } from '@heroicons/react/24/outline';
-import { HomeIcon as HomeIconSolid, BellIcon as BellIconSolid, UserCircleIcon as UserCircleIconSolid, MapIcon as MapIconSolid } from '@heroicons/react/24/solid';
+import { HomeIcon, MapIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { HomeIcon as HomeIconSolid, MapIcon as MapIconSolid, Cog6ToothIcon as Cog6ToothIconSolid } from '@heroicons/react/24/solid';
+import SettingsModal from './modals/SettingsModal';
 
 export default function SideNav() {
   const pathname = usePathname();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
 
@@ -49,6 +52,21 @@ export default function SideNav() {
           )}
         </Link>
       </nav>
+
+      <div className="mt-auto mb-8">
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
+          aria-label="Open settings"
+        >
+          <Cog6ToothIcon className="w-6 h-6 text-muted-foreground" />
+        </button>
+      </div>
+
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
     </div>
   );
 } 
