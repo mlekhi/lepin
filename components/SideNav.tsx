@@ -53,7 +53,7 @@ export default function SideNav() {
         </Link>
       </nav>
 
-      <div className="mt-auto mb-8">
+      <div className="mt-auto mb-4">
         <button
           onClick={() => setIsSettingsOpen(true)}
           className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors hover:bg-secondary"
