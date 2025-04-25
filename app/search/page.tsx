@@ -1,11 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Searchbar from '@/components/Searchbar';
-import SideNav from '@/components/SideNav';
-import PinGrid from '@/components/pins/PinGrid';
-import BoardGrid from '@/components/boards/BoardGrid';
 import { useEffect, useState } from 'react';
 
 export default function SearchPage() {
@@ -39,9 +34,6 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <>
-      <SideNav />
-      <Searchbar />
       <div className="min-h-screen bg-background pl-20">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
@@ -56,6 +48,5 @@ export default function SearchPage() {
           </div>
         </div>
       </div>
-    </>
   );
 } 

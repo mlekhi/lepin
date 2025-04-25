@@ -2,11 +2,9 @@
 
 import { useAuth } from '@/components/providers/AuthProvider';
 import PinGrid from "@/components/pins/PinGrid";
-import SideNav from "@/components/SideNav";
 import LandingPage from "@/components/landing/LandingPage";
 import { useEffect, useState } from 'react';
 import { Pin } from '@/lib/dummy-data';
-import Searchbar from '@/components/Searchbar';
 
 export default function Home() {
   const { user, signIn } = useAuth();
@@ -29,15 +27,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex">
-        <SideNav />
-        <div className="flex-1">
-          <Searchbar />
           <main className="ml-20 container mx-auto px-4">
             <PinGrid pins={pins} />
           </main>
-        </div>
-      </div>
     </div>
   );
 }

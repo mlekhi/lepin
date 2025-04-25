@@ -22,7 +22,7 @@ export default function Searchbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-background">
-      <div className="flex items-center gap-2 pl-28 pr-4 h-16">
+      <div className="flex items-center gap-2 p-8 h-16">
         {/* Search bar */}
         <div className="flex-1 max-w-[1200px]">
           <form onSubmit={handleSearch} className="relative">
