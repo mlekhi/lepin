@@ -16,7 +16,7 @@ export default function SideNav() {
 
   return (
     <div className="fixed left-0 top-0 h-full w-20 bg-background border-r border-border flex flex-col items-center z-50">
-      <div className="h-20 flex items-center justify-center">
+      <div className="h-16 flex items-center justify-center">
         <Link href="/">
           <Image
             src="/logo.png"
