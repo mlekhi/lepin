@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
 
 interface EditPinPageProps {
   params: {
@@ -118,9 +117,13 @@ export default function EditPinPage({ params }: EditPinPageProps) {
             required
           />
         </div>
-        <Button type="submit" disabled={isLoading}>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           {isLoading ? 'Updating...' : 'Update Pin'}
-        </Button>
+        </button>
       </form>
     </div>
   );

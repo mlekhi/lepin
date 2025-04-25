@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 
 interface PinPageClientProps {
   pin: {
@@ -84,19 +83,19 @@ export default function PinPageClient({ pin, currentUser }: PinPageClientProps) 
             </div>
             {isAuthor && (
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => router.push(`/pin/${pin.id}/edit`)}
+                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg border border-input hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
                   Edit
-                </Button>
-                <Button
-                  variant="destructive"
+                </button>
+                <button
                   onClick={handleDelete}
                   disabled={isDeleting}
+                  className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50"
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
-                </Button>
+                </button>
               </div>
             )}
           </div>
