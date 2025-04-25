@@ -1,9 +1,66 @@
 import { NextResponse } from 'next/server';
 import { auth, db } from '@/lib/firebase-admin';
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const idToken = searchParams.get('idToken');
+    const userId = searchParams.get('userId');
+
+    console.log('API Request - userId:', userId);
+
+    if (!idToken) {
+      console.log('API Error - No ID token provided');
+      return NextResponse.json(
+        { error: 'No ID token provided' },
+        { status: 401 }
+      );
+    }
+
+    await auth.verifyIdToken(idToken);
+
+    if (userId) {
+      // Handle individual user request
+      console.log('API - Fetching user document for ID:', userId);
+      const userDoc = await db.collection('users').doc(userId).get();
+
+      if (!userDoc.exists) {
+        console.log('API Error - User document not found for ID:', userId);
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        );
+      }
+
+      const userData = {
+        id: userDoc.id,
+        ...userDoc.data()
+      };
+      console.log('API Success - Found user data:', userData);
+      return NextResponse.json(userData);
+    } else {
+      // Handle general users request
+      const usersSnapshot = await db.collection('users').get();
+      const users = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      return NextResponse.json(users);
+    }
+  } catch (error) {
+    console.error('API Error - Error fetching users:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
-    const { idToken } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const idToken = searchParams.get('idToken');
 
     if (!idToken) {
       return NextResponse.json(
@@ -14,79 +71,24 @@ export async function POST(request: Request) {
 
     const decodedToken = await auth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
+    const { username, displayName, photoURL } = await request.json();
 
-    // Check if user already exists
-    const userDoc = await db.collection('users').doc(userId).get();
-    
-    if (userDoc.exists) {
-      return NextResponse.json({
-        id: userId,
-        ...userDoc.data()
-      });
-    }
-
-    // Create new user document
-    const userData = {
-      uid: userId,
-      email: decodedToken.email,
-      displayName: decodedToken.name,
-      photoURL: decodedToken.picture,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      boards: [],
-      followers: [],
-      following: []
-    };
-
-    await db.collection('users').doc(userId).set(userData);
-
-    return NextResponse.json(userData);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const idToken = searchParams.get('idToken');
-
-    if (!idToken) {
-      return NextResponse.json(
-        { error: 'No ID token provided' },
-        { status: 401 }
-      );
-    }
-
-    await auth.verifyIdToken(idToken);
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No user ID provided' },
-        { status: 400 }
-      );
-    }
-
-    const userDoc = await db.collection('users').doc(userId).get();
-
-    if (!userDoc.exists) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
+    const userRef = db.collection('users').doc(userId);
+    await userRef.set({
+      username,
+      displayName,
+      photoURL,
+      createdAt: new Date().toISOString()
+    });
 
     return NextResponse.json({
-      id: userDoc.id,
-      ...userDoc.data()
+      id: userId,
+      username,
+      displayName,
+      photoURL
     });
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error creating user:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,21 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore, CollectionReference } from 'firebase-admin/firestore';
-
-// Initialize Firebase Admin
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
-}
-
-const adminAuth = getAuth();
-const db = getFirestore();
+import { auth, db } from '@/lib/firebase-admin';
 
 export async function POST(request: Request) {
   try {
@@ -28,14 +12,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const decodedToken = await auth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
 
     const boardRef = await db.collection('boards').add({
       title,
       description,
       authorId: userId,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
+      pins: [],
       author: {
         name: decodedToken.name || 'Anonymous',
         image: decodedToken.picture || null,
@@ -70,21 +55,26 @@ export async function GET(request: Request) {
       );
     }
 
-    await adminAuth.verifyIdToken(idToken);
+    await auth.verifyIdToken(idToken);
 
-    let query: CollectionReference = db.collection('boards');
+    let boardsRef = db.collection('boards');
     
     if (userId) {
-      query = query.where('authorId', '==', userId) as CollectionReference;
+      const snapshot = await boardsRef.where('authorId', '==', userId).orderBy('createdAt', 'desc').get();
+      const boards = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log('Fetched boards for user:', boards);
+      return NextResponse.json(boards);
     }
 
-    const boardsSnapshot = await query.orderBy('createdAt', 'desc').get();
-    
-    const boards = boardsSnapshot.docs.map(doc => ({
+    const snapshot = await boardsRef.orderBy('createdAt', 'desc').get();
+    const boards = snapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
-
+    
     return NextResponse.json(boards);
   } catch (error) {
     console.error('Error fetching boards:', error);
@@ -108,7 +98,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const decodedToken = await auth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
 
     // Get the board to check ownership
