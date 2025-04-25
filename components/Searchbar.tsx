@@ -38,10 +38,10 @@ export default function Searchbar() {
         </div>
 
         {/* Profile section */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 p-2 rounded-full hover:bg-secondary/80"
+        <div className="flex items-center">
+          <Link
+            href="/profile"
+            className="px-2 py-1.5 rounded-xl hover:bg-secondary/80 transition-colors"
           >
             <div className="relative w-8 h-8 rounded-full overflow-hidden">
               <Image
@@ -51,6 +51,12 @@ export default function Searchbar() {
                 className="object-cover"
               />
             </div>
+          </Link>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="p-2 rounded-full hover:bg-secondary/80 transition-colors"
+            aria-label="Open profile menu"
+          >
             <ChevronDownIcon className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>

@@ -9,103 +9,96 @@ interface LandingPageProps {
 
 export default function LandingPage({ onSignIn }: LandingPageProps) {
   return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory bg-background relative">
+
       {/* Hero Section */}
-      <section className="h-screen w-full flex items-center justify-center px-4 snap-start bg-background">
-        <div className="text-center max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-foreground">
+      <section className="h-screen w-full flex items-center justify-center px-4 snap-start">
+        <div className="text-center max-w-3xl relative">
+          {/* Glowy border effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 blur-2xl opacity-50 -z-10" />
+          
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
             Scroll. Pin. Praise the King.
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/80 mb-8">
-          LePin is a Pinterest-style tribute board dedicated entirely to the myth, the man, the moment: LeBron James. 
+          <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed">
+            LePin is a Pinterest-style tribute board dedicated entirely to the myth, the man, the moment: LeBron James.
           </p>
           <button
             onClick={onSignIn}
-            className="bg-primary text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary/90 transition-all duration-300"
+            className="group relative px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300"
           >
-            Get Started
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur group-hover:blur-xl transition-all duration-300" />
+            <div className="relative bg-background/90 backdrop-blur-sm hover:bg-background/80 text-foreground px-8 py-4 rounded-full transition-all duration-300">
+              Get Started
+            </div>
           </button>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="h-screen w-full flex items-center px-4 snap-start bg-background">
-        <div className="max-w-6xl mx-auto w-full">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground">
-            Why Lepin?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="p-6">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <MagnifyingGlassIcon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Discover Highlights</h3>
-              <p className="text-foreground/80">
-                Find and save your favorite Lebron moments, from game-winning shots to iconic dunks.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="p-6">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <BookmarkIcon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Organize Collections</h3>
-              <p className="text-foreground/80">
-                Create boards for different aspects of Lebron's career - championships, milestones, and more.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="p-6">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <UserGroupIcon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Join the Community</h3>
-              <p className="text-foreground/80">
-              From his high school days in Akron to his late-game dagger threes in year 21, every post captures a different version of LeBron.
-              </p>
+      {/* Image Grid Preview */}
+      <section className="h-screen w-full flex items-stretch snap-start backdrop-blur-sm bg-secondary/10">
+        <div className="w-1/2 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary p-[1px]">
+            <div className="relative h-full w-full">
+              <Image
+                src="/images/lebron-1.jpg"
+                alt="LeBron James"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Image Grid Preview */}
-      <section className="h-screen w-full flex items-center px-4 snap-start bg-secondary">
-        <div className="max-w-6xl mx-auto w-full">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground">
-            Start Your Collection
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square relative rounded-lg overflow-hidden">
-                <Image
-                  src={`/images/lebron-${i}.jpg`}
-                  alt={`Lebron James ${i}`}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            ))}
+        <div className="w-1/2 flex items-center px-12">
+          <div className="max-w-xl">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary">
+              Start Your Collection
+            </h2>
+            <p className="text-xl text-foreground/80 mb-12 leading-relaxed">
+              Curate your personal gallery of the King's greatest moments. From championship celebrations to iconic dunks, build a collection that tells the story of greatness.
+            </p>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="h-screen w-full flex items-center px-4 snap-start bg-background">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+      <section className="h-screen w-full flex items-center px-4 snap-start relative">
+        {/* Blurred background layer */}
+        <div className="absolute inset-x-0 bottom-0 h-[80%] w-full">
+          <Image
+            src="/lebron-landing.png"
+            alt="Background"
+            fill
+            className="object-contain object-bottom blur-3xl opacity-50 scale-110"
+            priority
+          />
+        </div>
+        {/* Main image layer */}
+        <div className="absolute inset-x-0 bottom-0 h-[80%] w-full">
+          <Image
+            src="/lebron-landing.png"
+            alt="LeBron James Lakers"
+            fill
+            className="object-contain object-bottom"
+            priority
+          />
+        </div>
+        <div className="max-w-4xl mx-auto text-center relative">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary">
             Ready to Build Your Lebron Collection?
           </h2>
-          <p className="text-xl text-foreground/80 mb-8">
+          <p className="text-xl text-foreground/80 mb-12 leading-relaxed">
             Join thousands of fans who use Lepin to celebrate the King's legacy.
           </p>
           <button
             onClick={onSignIn}
-            className="bg-primary text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary/90 transition-all duration-300"
+            className="group relative px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300"
           >
-            Sign Up Now
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur group-hover:blur-xl transition-all duration-300" />
+            <div className="relative bg-background/90 backdrop-blur-sm hover:bg-background/80 text-foreground px-8 py-4 rounded-full transition-all duration-300">
+              Sign Up Now
+            </div>
           </button>
         </div>
       </section>
