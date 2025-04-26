@@ -23,59 +23,78 @@ export default function ProfilePage() {
   const [isCreatingBoard, setIsCreatingBoard] = useState(false);
   const [activeTab, setActiveTab] = useState<'pins' | 'boards'>('boards');
 
-  useEffect(() => {
-    if (user) {
+  const fetchUserData = async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
       console.log('Profile - Current user:', user.uid);
       
-      user.getIdToken().then(idToken => {
-        // Fetch user profile data
-        fetch(`/api/users?idToken=${idToken}&userId=${user.uid}`)
-          .then(res => {
-            console.log('Profile - API Response status:', res.status);
-            return res.json();
-          })
-          .then(data => {
-            console.log('Profile - API Response data:', data);
-            if (data.error) {
-              console.error('Profile Error - API returned error:', data.error);
-              return;
-            }
-            setProfileUser(data);
-            // Fetch user's pins
-            return fetch(`/api/pins?idToken=${idToken}&userId=${user.uid}`);
-          })
-          .then(res => res?.json())
-          .then(data => {
-            if (Array.isArray(data)) {
-              setProfilePins(data);
-            } else {
-              setProfilePins([]);
-            }
-            // Fetch user's boards
-            return fetch(`/api/boards?idToken=${idToken}&userId=${user.uid}`);
-          })
-          .then(res => res?.json())
-          .then(data => {
-            console.log('Boards data:', data);
-            if (Array.isArray(data)) {
-              setBoards(data);
-            } else {
-              setBoards([]);
-            }
-            setIsLoading(false);
-          })
-          .catch(error => {
-            console.error('Error fetching profile data:', error);
-            setIsLoading(false);
-            setBoards([]);
-            setProfilePins([]);
-          });
-      });
+      const idToken = await user.getIdToken();
+      
+      // Fetch user profile data
+      const userRes = await fetch(`/api/users?idToken=${idToken}&userId=${user.uid}`);
+      console.log('Profile - API Response status:', userRes.status);
+      
+      const userData = await userRes.json();
+      console.log('Profile - API Response data:', userData);
+      
+      if (userData.error) {
+        console.error('Profile Error - API returned error:', userData.error);
+        return;
+      }
+      
+      setProfileUser(userData);
+      
+      // Fetch user's pins
+      const pinsRes = await fetch(`/api/pins?idToken=${idToken}&userId=${user.uid}`);
+      const pinsData = await pinsRes.json();
+      
+      if (Array.isArray(pinsData)) {
+        setProfilePins(pinsData);
+      } else {
+        setProfilePins([]);
+      }
+      
+      // Fetch user's boards using the board IDs from the user object
+      if (userData.boards && Array.isArray(userData.boards) && userData.boards.length > 0) {
+        // Fetch details for each board
+        const boardPromises = userData.boards.map((boardId: string) => 
+          fetch(`/api/boards/${boardId}?idToken=${idToken}`).then(res => res.json())
+        );
+        
+        const boardsData = await Promise.all(boardPromises);
+        console.log('Boards data:', boardsData);
+        setBoards(boardsData.filter(board => !board.error));
+      } else {
+        // Fall back to fetching all user's boards if no board references exist
+        const boardsRes = await fetch(`/api/boards?idToken=${idToken}&userId=${user.uid}`);
+        const boardsData = await boardsRes.json();
+        console.log('Boards data from fallback:', boardsData);
+        
+        if (Array.isArray(boardsData)) {
+          setBoards(boardsData);
+        } else {
+          setBoards([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+      setBoards([]);
+      setProfilePins([]);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUserData();
   }, [user]);
 
   const handleBoardCreated = (newBoard: Board) => {
     setBoards(prev => [...prev, newBoard]);
+    // Re-fetch user data to get updated board references
+    fetchUserData();
   };
 
   if (isLoading) {

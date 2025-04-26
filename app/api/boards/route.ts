@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth, db } from '@/lib/firebase-admin';
+import { admin, auth, db } from '@/lib/firebase-admin';
 
 export async function POST(request: Request) {
   try {
@@ -28,11 +28,24 @@ export async function POST(request: Request) {
     });
 
     const board = await boardRef.get();
-
-    return NextResponse.json({
+    const boardData = {
       id: board.id,
       ...board.data(),
-    });
+    };
+    
+    // Add the board reference to the user's document
+    const userRef = db.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+    
+    if (userDoc.exists) {
+      // Update the user document with the new board ID
+      // Use arrayUnion to add to the boards array if it exists, or create it if it doesn't
+      await userRef.update({
+        boards: admin.firestore.FieldValue.arrayUnion(board.id)
+      });
+    }
+
+    return NextResponse.json(boardData);
   } catch (error) {
     console.error('Error creating board:', error);
     return NextResponse.json(
