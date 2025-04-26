@@ -5,6 +5,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import PinGrid from '@/components/pins/PinGrid';
 import Image from 'next/image';
 import CreateBoardModal from '@/components/modals/CreateBoardModal';
+import Link from 'next/link';
 
 interface Board {
   id: string;
@@ -173,9 +174,10 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.isArray(boards) && boards.length > 0 ? (
               boards.map((board) => (
-                <div
+                <Link
                   key={board.id}
-                  className="aspect-[4/3] p-6 bg-secondary/50 rounded-xl hover:bg-secondary/80 transition-colors"
+                  href={`/board/${board.id}`}
+                  className="aspect-[4/3] p-6 bg-secondary/50 rounded-xl hover:bg-secondary/80 transition-colors cursor-pointer"
                 >
                   <h3 className="font-semibold mb-2">{board.title}</h3>
                   {board.description && (
@@ -184,7 +186,7 @@ export default function ProfilePage() {
                   <p className="text-xs text-muted-foreground">
                     {board.pins?.length || 0} pins
                   </p>
-                </div>
+                </Link>
               ))
             ) : (
               <div
