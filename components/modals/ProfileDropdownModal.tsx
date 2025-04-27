@@ -56,7 +56,7 @@ export default function ProfileDropdownModal({ isOpen, onClose }: ProfileDropdow
         </div>
         <div className="py-2">
           <Link 
-            href="/profile/boards"
+            href="/profile"
             className="block px-4 py-3 text-sm text-foreground hover:bg-secondary/50 transition-colors"
             onClick={onClose}
           >
