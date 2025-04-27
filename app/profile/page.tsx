@@ -142,7 +142,7 @@ export default function ProfilePage() {
               Boards
             </button>
           </div>
-          {activeTab === 'boards' && user?.uid === profileUser.uid && (
+          {activeTab === 'boards' && user?.uid === (profileUser?.id || '') && (
             <button
               onClick={() => setIsCreatingBoard(true)}
               className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
