@@ -1,13 +1,12 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, Auth } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { AuthUser } from '@/lib/types';
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -16,11 +15,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Function to create or update user in database
-  const createUserInDatabase = async (user: User) => {
+  const createUserInDatabase = async (user: FirebaseUser) => {
     try {
       const idToken = await user.getIdToken();
       const response = await fetch('/api/users', {
@@ -40,10 +39,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        createUserInDatabase(user);
+    if (!auth) return;
+    
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Map Firebase User to our AuthUser type
+        setUser({
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          photoURL: firebaseUser.photoURL,
+          getIdToken: () => firebaseUser.getIdToken(),
+        });
+        createUserInDatabase(firebaseUser);
+      } else {
+        setUser(null);
       }
       setLoading(false);
     });
@@ -52,6 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async () => {
+    if (!auth) return;
+    
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -63,6 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    if (!auth) return;
+    
     try {
       await auth.signOut();
     } catch (error) {

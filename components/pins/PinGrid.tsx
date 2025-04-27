@@ -1,6 +1,6 @@
 'use client';
 
-import { Pin } from '@/lib/dummy-data';
+import { Pin } from '@/lib/types';
 import PinCard from './PinCard';
 
 interface PinGridProps {

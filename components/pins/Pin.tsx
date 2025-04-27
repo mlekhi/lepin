@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Pin as PinType } from '@/lib/dummy-data';
+import { Pin as PinType } from '@/lib/types';
 
 interface PinProps {
   pin: PinType;

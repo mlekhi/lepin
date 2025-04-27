@@ -6,21 +6,14 @@ import PinGrid from '@/components/pins/PinGrid';
 import Image from 'next/image';
 import CreateBoardModal from '@/components/modals/CreateBoardModal';
 import Link from 'next/link';
-
-interface Board {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  pins: string[];
-}
+import { Board, User } from '@/lib/types';
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const [profilePins, setProfilePins] = useState<any[]>([]);
   const [boards, setBoards] = useState<Board[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [profileUser, setProfileUser] = useState<any>(null);
+  const [profileUser, setProfileUser] = useState<User | null>(null);
   const [isCreatingBoard, setIsCreatingBoard] = useState(false);
   const [activeTab, setActiveTab] = useState<'pins' | 'boards'>('boards');
 

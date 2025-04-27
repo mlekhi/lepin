@@ -6,7 +6,7 @@ import { HeartIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import Image from "next/image";
 import Link from "next/link";
-import { Pin } from '@/lib/dummy-data';
+import { Pin } from '@/lib/types';
 
 interface PinCardProps {
   pin: Pin & {

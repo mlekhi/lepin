@@ -1,9 +1,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Board } from '@/lib/dummy-data';
+import { Board } from '@/lib/types';
 
+// Define Pin type for boards display
+interface PinPreview {
+  id: string;
+  title: string;
+  imageUrl: string;
+}
+
+// Omit the pins array from Board and add our own extended version
 interface BoardGridProps {
-  boards: Board[];
+  boards: Array<Omit<Board, 'pins'> & {
+    pins: PinPreview[];
+  }>;
 }
 
 export default function BoardGrid({ boards }: BoardGridProps) {
@@ -47,9 +57,9 @@ export default function BoardGrid({ boards }: BoardGridProps) {
               </p>
             )}
             <div className="flex items-center mt-2">
-              {board.author?.photoURL ? (
+              {board.author?.image ? (
                 <Image
-                  src={board.author.photoURL}
+                  src={board.author.image}
                   alt={board.author.name || ''}
                   width={24}
                   height={24}

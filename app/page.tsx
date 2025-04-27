@@ -4,7 +4,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import PinGrid from "@/components/pins/PinGrid";
 import LandingPage from "@/components/landing/LandingPage";
 import { useEffect, useState } from 'react';
-import { Pin } from '@/lib/dummy-data';
+import { Pin } from '@/lib/types';
 
 export default function Home() {
   const { user, signIn } = useAuth();
