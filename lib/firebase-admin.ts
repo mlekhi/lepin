@@ -18,6 +18,7 @@ if (!admin.apps.length) {
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
+      storageBucket: 'lebron-d2ca0.firebasestorage.app'
     });
     
     console.log('Firebase Admin initialized successfully');
